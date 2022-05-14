@@ -8,7 +8,14 @@ edition = "2018"
 [dependencies]
 config = "0.13.1"
 dotenv = "0.15.0"
+actix-rt="2.7.0"
 actix-web = "4"
 mysql = "22.1.0"
-chrono = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
 serde = { version = "1.0", features = ["derive"] }
+sqlx = { version = "0.5", features = [
+    "postgres",
+    "runtime-tokio-rustls",
+    "macros",
+    "chrono"
+] }

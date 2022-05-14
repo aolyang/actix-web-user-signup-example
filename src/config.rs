@@ -8,15 +8,9 @@ pub struct Server {
 }
 
 #[derive(Deserialize, Debug)]
-pub struct DbConfig {
-    pub user: String,
-    pub password: String,
-}
-
-#[derive(Deserialize, Debug)]
 pub struct AppConfig {
+    pub postgres_password: String,
     pub server: Server,
-    pub db: DbConfig,
 }
 
 impl AppConfig {

@@ -6,10 +6,10 @@ services:
     env_file:
       - ./.env
     ports:
-      - "5000:5000"
-  dev:
-    image: "rust:latest"
-    volumes:
-      - .:/blog_server
-    environment:
-      SERVER_PORT: "8080"
+      - "7878:5432"
+#  dev:
+#    image: "rust:latest"
+#    volumes:
+#      - .:/blog_server
+#    environment:
+#      SERVER_PORT: "8080"
