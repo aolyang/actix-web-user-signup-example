@@ -2,13 +2,13 @@ mod config;
 mod models;
 mod state;
 
-use std::collections::HashMap;
-
-use crate::state::GlobalState;
 use actix_web::{get, middleware::Logger, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
+use std::collections::HashMap;
+
+use crate::state::GlobalState;
 
 #[get("/api/v1/ping")]
 async fn root_ping() -> impl Responder {
@@ -23,8 +23,8 @@ async fn main() -> std::io::Result<()> {
 
     let server = format!("{}:{}", config.server.host, config.server.port);
     let db_url = format!(
-        "postgres://postgres:{}@127.0.0.1:5432/blog",
-        config.postgres_password
+        "postgres://{}:{}@127.0.0.1:5432/blog",
+        config.postgres_user, config.postgres_password
     );
 
     let db_pool = PgPoolOptions::new().connect(&db_url).await.unwrap();

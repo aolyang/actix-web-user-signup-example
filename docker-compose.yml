@@ -3,10 +3,12 @@ services:
   postgres:
     image: "postgres:latest"
     restart: "always"
-    env_file:
-      - ./.env
+    environment:
+      POSTGRES_USER: actix
+      POSTGRES_PASSWORD: actix
+      POSTGRES_DB: blog
     ports:
-      - "7878:5432"
+      - "5432:5432"
 #  dev:
 #    image: "rust:latest"
 #    volumes:

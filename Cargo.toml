@@ -8,14 +8,18 @@ edition = "2018"
 [dependencies]
 config = "0.13.1"
 dotenv = "0.15.0"
-actix-rt="2.7.0"
+actix-rt = "2.7.0"
 actix-web = "4"
-mysql = "22.1.0"
-chrono = { version = "0.4", features = ["serde"] }
-serde = { version = "1.0", features = ["derive"] }
 sqlx = { version = "0.5", features = [
     "postgres",
     "runtime-tokio-rustls",
     "macros",
     "chrono"
 ] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0.0", features = ["serde", "v4"] }
+serde = { version = "1.0", features = ["derive"] }
+validator = "0.14.0"
+validator_derive = "0.14.0"
+jsonwebtoken = "8.1.0"
+argonautica = "0.2.0"
