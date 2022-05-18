@@ -1,8 +1,12 @@
+#[macro_use]
+extern crate validator_derive;
+
 mod config;
-mod models;
+mod routes;
+mod services;
 mod state;
 
-use actix_web::{get, middleware::Logger, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
@@ -27,13 +31,15 @@ async fn main() -> std::io::Result<()> {
         config.postgres_user, config.postgres_password
     );
 
-    let db_pool = PgPoolOptions::new().connect(&db_url).await.unwrap();
     println!("Rust server start at: {}", server);
 
-    HttpServer::new(|| {
+    let shared_state = web::Data::new(GlobalState {
+        db: PgPoolOptions::new().connect(&db_url).await.unwrap(),
+    });
+    HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
-            .app_data(GlobalState { db: db_pool })
+            .app_data(shared_state.clone())
             .service(root_ping)
     })
     .bind(server)?
