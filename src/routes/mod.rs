@@ -1,2 +1,2 @@
-pub mod hello;
+pub mod api;
 pub mod v1;

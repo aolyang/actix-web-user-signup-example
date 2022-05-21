@@ -2,22 +2,18 @@
 extern crate validator_derive;
 
 mod config;
+mod middleware;
+mod modules;
 mod routes;
 mod services;
 mod state;
 
+use crate::state::GlobalState;
 use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::collections::HashMap;
-
-use crate::state::GlobalState;
-
-#[get("/api/v1/ping")]
-async fn root_ping() -> impl Responder {
-    HttpResponse::Ok().json(HashMap::from([("msg", "pong".to_string())]))
-}
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -40,7 +36,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(Logger::default())
             .app_data(shared_state.clone())
-            .service(root_ping)
+            .configure(routes::api::new)
     })
     .bind(server)?
     .run()
