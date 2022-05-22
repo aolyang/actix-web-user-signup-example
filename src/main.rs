@@ -2,6 +2,7 @@
 extern crate validator_derive;
 
 mod config;
+mod error;
 mod middleware;
 mod modules;
 mod routes;
