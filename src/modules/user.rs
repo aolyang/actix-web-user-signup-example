@@ -1,9 +1,10 @@
 use actix_web::web;
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
+use sqlx::{Error, FromRow};
 use uuid::Uuid;
 
-#[derive(Deserialize, Debug, sqlx::FromRow)]
+#[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
 pub struct User {
     pub id: Uuid,
     pub username: String,

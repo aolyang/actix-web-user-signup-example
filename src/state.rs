@@ -1,7 +1,4 @@
-use crate::config::AppConfig;
-use crate::{PgPool, PgPoolOptions};
-use actix_web::web;
-use std::future;
+use crate::PgPool;
 
 pub struct GlobalState {
     pub db: PgPool,

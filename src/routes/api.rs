@@ -11,14 +11,15 @@ pub fn new(cfg: &mut web::ServiceConfig) {
     let api_v1 = web::scope("/api/v1")
         .service(
             web::scope("/users")
-                .route("", web::post().to(v1::user::sign_up))
-                .route("/login", web::post().to(v1::user::sign_in)),
+                .route("", web::post().to(v1::user::api::sign_up))
+                .route("/login", web::post().to(v1::user::api::sign_in)),
         )
         .service(
             web::scope("/articles")
-                .route("", web::get().to(|| "string"))
-                .route("", web::post().to(|| "string")),
+                // .route("", web::get().to(|| HttpResponse::Ok().json("todo")))
+                // .route("", web::post().to(|| HttpResponse::Ok().json("todo"))),
         );
 
+    cfg.service(ping);
     cfg.service(api_v1);
 }

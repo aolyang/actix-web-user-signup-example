@@ -13,4 +13,4 @@ create table users
     avatar         varchar null,
     create_at      timestamp not null default current_timestamp,
     update_at      timestamp not null default current_timestamp
-)
+);

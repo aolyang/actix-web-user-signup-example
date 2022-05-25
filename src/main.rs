@@ -8,6 +8,7 @@ mod modules;
 mod routes;
 mod services;
 mod state;
+mod handlers;
 
 use crate::state::GlobalState;
 use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
