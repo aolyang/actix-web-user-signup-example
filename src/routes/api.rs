@@ -2,7 +2,7 @@ use crate::routes::v1;
 use actix_web::{get, web, HttpResponse, Responder};
 use std::collections::HashMap;
 
-#[get("/ping")]
+#[get("/api/v1/ping")]
 async fn ping() -> impl Responder {
     HttpResponse::Ok().json(HashMap::from([("msg", "pong")]))
 }
@@ -12,7 +12,7 @@ pub fn new(cfg: &mut web::ServiceConfig) {
         .service(
             web::scope("/users")
                 .route("", web::post().to(v1::user::api::sign_up))
-                .route("/login", web::post().to(v1::user::api::sign_in)),
+                // .route("/login", web::post().to(v1::user::api::sign_in)),
         )
         .service(
             web::scope("/articles")

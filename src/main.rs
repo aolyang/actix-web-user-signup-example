@@ -3,19 +3,19 @@ extern crate validator_derive;
 
 mod config;
 mod error;
+mod handlers;
 mod middleware;
-mod modules;
+mod models;
 mod routes;
 mod services;
 mod state;
-mod handlers;
 
+use crate::services::crypto::Crypto;
 use crate::state::GlobalState;
 use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
-use std::collections::HashMap;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -33,7 +33,9 @@ async fn main() -> std::io::Result<()> {
 
     let shared_state = web::Data::new(GlobalState {
         db: PgPoolOptions::new().connect(&db_url).await.unwrap(),
+        crypto: Crypto::new(),
     });
+
     HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())

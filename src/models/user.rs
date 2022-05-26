@@ -1,10 +1,10 @@
 use actix_web::web;
-use chrono::NaiveDate;
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-use sqlx::{Error, FromRow};
+use sqlx;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, Debug, sqlx::FromRow)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct User {
     pub id: Uuid,
     pub username: String,
@@ -13,11 +13,22 @@ pub struct User {
     pub password: String,
     pub nick_name: Option<String>,
     pub avatar: Option<String>,
-    pub create_at: NaiveDate,
-    pub update_at: NaiveDate,
+    pub create_at: NaiveDateTime,
+    pub update_at: NaiveDateTime,
 }
 
-#[derive(Serialize, Validate, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AuthUser {
+    pub id: Uuid,
+    pub username: String,
+    pub email: String,
+    pub nick_name: Option<String>,
+    pub avatar: Option<String>,
+    pub create_at: NaiveDateTime,
+    pub update_at: NaiveDateTime,
+}
+
+#[derive(Serialize, Deserialize, Validate, Debug, Clone)]
 pub struct NewUser {
     #[validate(length(min = 3))]
     pub username: String,

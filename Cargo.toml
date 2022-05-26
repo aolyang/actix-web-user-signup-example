@@ -18,7 +18,7 @@ sqlx = { version = "0.5", features = [
     "chrono"
 ] }
 chrono = { version = "0.4", features = ["serde"] }
-uuid = { version = "1.0.0", features = ["serde", "v4"] }
+uuid = { version = "0.8.2", features = ["serde", "v4"] }
 serde = { version = "1.0", features = ["derive"] }
 validator = "0.14.0"
 validator_derive = "0.14.0"

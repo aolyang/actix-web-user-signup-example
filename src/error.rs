@@ -27,7 +27,7 @@ impl ResError {
         match self {
             ResError::DBError(msg) => {
                 println!("Database error occurred {:?}", msg);
-                "Database error".into()
+                format!("Database Error {}", msg)
             }
             ResError::ActixError(msg) => {
                 println!("Server error occurred {:?}", msg);

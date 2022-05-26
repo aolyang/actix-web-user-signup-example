@@ -2,6 +2,7 @@ use argonautica::Hasher;
 use color_eyre::Result;
 use eyre::eyre;
 use futures::compat::Future01CompatExt;
+use std::env;
 use std::sync::Arc;
 use tracing::instrument;
 
@@ -11,6 +12,11 @@ pub struct Crypto {
 }
 
 impl Crypto {
+    pub fn new() -> Self {
+        Crypto {
+            key: Arc::new(env::var("SECRETE_KEY").unwrap()),
+        }
+    }
     #[instrument(self, pwd)]
     pub async fn hash_pwd(&self, pwd: String) -> Result<String> {
         Hasher::default()

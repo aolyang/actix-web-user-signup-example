@@ -12,7 +12,6 @@ pub struct AppConfig {
     pub postgres_user: String,
     pub postgres_password: String,
     pub server: Server,
-    pub secret_key: String,
 }
 
 impl AppConfig {
