@@ -2,6 +2,7 @@ use actix_web::web;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+use validator::{Validate, ValidationError};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct User {
@@ -26,10 +27,12 @@ pub struct NewUser {
     pub password: String,
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Debug, Validate)]
 pub struct UpdateProfile {
     pub nick_name: Option<String>,
-    // pub avatar: Option<String>,
+    #[validate(email)]
+    pub email: Option<String>,
+    pub avatar: Option<String>,
 }
 
 impl From<web::Json<NewUser>> for NewUser {
@@ -47,6 +50,8 @@ impl From<web::Json<UpdateProfile>> for UpdateProfile {
     fn from(info: web::Json<UpdateProfile>) -> Self {
         UpdateProfile {
             nick_name: info.nick_name.clone(),
+            email: info.email.clone(),
+            avatar: info.avatar.clone(),
         }
     }
 }
