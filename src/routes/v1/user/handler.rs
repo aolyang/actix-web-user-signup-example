@@ -1,9 +1,9 @@
 use crate::error::ResError;
-use crate::models::user::{AuthUser, NewUser};
+use crate::models::user::{NewUser, User};
 use crate::services::crypto::Crypto;
 use sqlx::PgPool;
 
-pub async fn sign_up(pool: &PgPool, hasher: &Crypto, user: NewUser) -> Result<AuthUser, ResError> {
+pub async fn sign_up(pool: &PgPool, hasher: &Crypto, user: NewUser) -> Result<User, ResError> {
     let hash_pwd = hasher.hash_pwd(user.password.clone()).await.unwrap();
     let row = sqlx::query!(
         r#"
@@ -14,17 +14,18 @@ pub async fn sign_up(pool: &PgPool, hasher: &Crypto, user: NewUser) -> Result<Au
         user.username,
         user.email,
         hash_pwd,
-        "",
+        user.nick_name,
         "",
     )
     .fetch_one(pool)
     .await?;
 
-    Ok(AuthUser {
+    Ok(User {
         id: row.id,
         username: row.username,
         email: row.email,
         nick_name: row.nick_name,
+        password: "".to_string(),
         avatar: row.avatar,
         create_at: row.create_at,
         update_at: row.update_at,
