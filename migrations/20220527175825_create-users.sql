@@ -1,14 +1,14 @@
-create extension if not exists "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-create table users
+CREATE TABLE users
 (
-    id        uuid               default uuid_generate_v4() primary key,
-    username  varchar   not null unique,
-    email     varchar   null unique,
+    id        UUID               DEFAULT uuid_generate_v4() PRIMARY KEY,
+    username  VARCHAR   NOT NULL UNIQUE,
+    email     VARCHAR   NULL UNIQUE,
 --     email_verified smallint  NOT NULL default false,
-    password  varchar   not null,
-    nick_name varchar   null,
-    avatar    varchar   null,
-    create_at timestamp not null default current_timestamp,
-    update_at timestamp not null default current_timestamp
+    password  VARCHAR   NOT NULL,
+    nick_name VARCHAR   NULL,
+    avatar    VARCHAR   NULL,
+    create_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
+    update_at TIMESTAMP NOT NULL DEFAULT current_timestamp
 );
