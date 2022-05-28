@@ -2,9 +2,8 @@ use actix_web::web;
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use validator::{Validate, ValidationError};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Debug)]
 pub struct User {
     pub id: Uuid,
     pub username: String,
@@ -17,7 +16,7 @@ pub struct User {
     pub update_at: NaiveDateTime,
 }
 
-#[derive(Serialize, Deserialize, Validate, Debug, Clone)]
+#[derive(Deserialize, Validate, Debug, Clone)]
 pub struct NewUser {
     #[validate(length(min = 3))]
     pub username: String,
@@ -27,7 +26,7 @@ pub struct NewUser {
     pub password: String,
 }
 
-#[derive(Serialize, Debug, Validate)]
+#[derive(Debug, Validate)]
 pub struct UpdateProfile {
     pub nick_name: Option<String>,
     #[validate(email)]

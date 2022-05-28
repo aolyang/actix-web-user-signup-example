@@ -1,9 +1,9 @@
-use crate::error::ResError;
+use crate::error::AppError;
 use crate::models::user::{NewUser, User};
 use crate::services::crypto::Crypto;
 use sqlx::PgPool;
 
-pub async fn sign_up(pool: &PgPool, hasher: &Crypto, user: NewUser) -> Result<User, ResError> {
+pub async fn sign_up(pool: &PgPool, hasher: &Crypto, user: NewUser) -> Result<User, AppError> {
     let hash_pwd = hasher.hash_pwd(user.password.clone()).await.unwrap();
 
     let row = sqlx::query!(

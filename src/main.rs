@@ -8,10 +8,11 @@ mod models;
 mod routes;
 mod services;
 mod state;
+mod utils;
 
 use crate::services::crypto::Crypto;
 use crate::state::GlobalState;
-use actix_web::{get, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;

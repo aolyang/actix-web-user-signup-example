@@ -1,11 +1,10 @@
-use actix_web::body::BoxBody;
 use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
 use serde::Serialize;
 use std::fmt;
 
 #[derive(Debug, Serialize)]
-pub enum ResError {
+pub enum AppError {
     DBError(String),
     ActixError(String),
     NotFound(String),
@@ -16,24 +15,24 @@ pub struct ResInfo {
     error_message: String,
 }
 
-impl fmt::Display for ResError {
+impl fmt::Display for AppError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
         write!(f, "{}", self)
     }
 }
 
-impl ResError {
+impl AppError {
     pub fn error_response(&self) -> String {
         match self {
-            ResError::DBError(msg) => {
+            AppError::DBError(msg) => {
                 println!("Database error occurred {:?}", msg);
                 format!("Database Error {}", msg)
             }
-            ResError::ActixError(msg) => {
+            AppError::ActixError(msg) => {
                 println!("Server error occurred {:?}", msg);
                 "Internal server error".into()
             }
-            ResError::NotFound(msg) => {
+            AppError::NotFound(msg) => {
                 println!("Page not found");
                 msg.into()
             }
@@ -41,11 +40,11 @@ impl ResError {
     }
 }
 
-impl actix_web::error::ResponseError for ResError {
+impl actix_web::error::ResponseError for AppError {
     fn status_code(&self) -> StatusCode {
         match self {
-            ResError::DBError(..) | ResError::ActixError(..) => StatusCode::INTERNAL_SERVER_ERROR,
-            ResError::NotFound(..) => StatusCode::NOT_FOUND,
+            AppError::DBError(..) | AppError::ActixError(..) => StatusCode::INTERNAL_SERVER_ERROR,
+            AppError::NotFound(..) => StatusCode::NOT_FOUND,
         }
     }
     fn error_response(&self) -> HttpResponse {
@@ -55,14 +54,14 @@ impl actix_web::error::ResponseError for ResError {
     }
 }
 
-impl From<actix_web::error::Error> for ResError {
+impl From<actix_web::error::Error> for AppError {
     fn from(err: actix_web::error::Error) -> Self {
-        ResError::ActixError(err.to_string())
+        AppError::ActixError(err.to_string())
     }
 }
 
-impl From<sqlx::error::Error> for ResError {
+impl From<sqlx::error::Error> for AppError {
     fn from(err: sqlx::error::Error) -> Self {
-        ResError::DBError(err.to_string())
+        AppError::DBError(err.to_string())
     }
 }
