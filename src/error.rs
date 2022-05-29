@@ -81,15 +81,15 @@ impl actix_web::error::ResponseError for AppError {
         HttpResponse::build(self.status_code()).json(self)
     }
 }
-
-impl From<actix_web::error::Error> for AppError {
-    fn from(err: actix_web::error::Error) -> Self {
-        AppError {
-            code: AppError::SERVER_ERROR,
-            message: err.to_string(),
-        }
-    }
-}
+//
+// impl From<actix_web::error::Error> for AppError {
+//     fn from(err: actix_web::error::Error) -> Self {
+//         AppError {
+//             code: AppError::SERVER_ERROR,
+//             message: err.to_string(),
+//         }
+//     }
+// }
 
 impl From<sqlx::error::Error> for AppError {
     fn from(err: sqlx::error::Error) -> Self {

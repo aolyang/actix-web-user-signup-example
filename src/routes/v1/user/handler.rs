@@ -6,11 +6,12 @@ use sqlx::PgPool;
 pub async fn sign_up(pool: &PgPool, hasher: &Crypto, user: NewUser) -> Result<User, AppError> {
     let hash_pwd = hasher.hash_pwd(user.password.clone()).await.unwrap();
 
-    let row = sqlx::query!(
+    let row: User = sqlx::query_as!(
+        User,
         r#"
         insert into users (username, email, password, nick_name, avatar)
         values ($1, $2, $3, $4, $5)
-        returning id, username, email, nick_name, avatar, create_at, update_at
+        returning id, username, password, email, nick_name, avatar, create_at, update_at
         "#,
         user.username,
         user.email,
@@ -21,14 +22,5 @@ pub async fn sign_up(pool: &PgPool, hasher: &Crypto, user: NewUser) -> Result<Us
     .fetch_one(pool)
     .await?;
 
-    Ok(User {
-        id: row.id,
-        username: row.username,
-        email: row.email,
-        nick_name: row.nick_name,
-        password: "".to_string(),
-        avatar: row.avatar,
-        create_at: row.create_at,
-        update_at: row.update_at,
-    })
+    Ok(row)
 }
