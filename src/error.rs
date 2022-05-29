@@ -6,6 +6,12 @@ use std::fmt;
 #[derive(Debug, Eq, PartialEq)]
 pub struct AppErrorCode(i32);
 
+#[derive(Debug, Serialize)]
+pub struct AppError {
+    pub code: AppErrorCode,
+    pub message: String,
+}
+
 impl Serialize for AppErrorCode {
     fn serialize<S>(&self, serializer: S) -> Result<<S as Serializer>::Ok, <S as Serializer>::Error>
     where
@@ -36,12 +42,6 @@ impl AppErrorCode {
     }
 }
 
-#[derive(Debug, Serialize)]
-pub struct AppError {
-    pub code: AppErrorCode,
-    pub message: String,
-}
-
 impl AppError {
     /// (1000..2000) error from request input  
     pub const INVALID_INPUT: AppErrorCode = AppErrorCode(1000);
@@ -49,12 +49,15 @@ impl AppError {
     pub const INVALID_USER_EMAIL: AppErrorCode = AppErrorCode(1101);
     pub const INVALID_USER_NAME: AppErrorCode = AppErrorCode(1102);
     /// (2000..3000) permissions
-    pub const PERMISSION_ERROR: AppErrorCode = AppErrorCode(2000);
+    // pub const PERMISSION_ERROR: AppErrorCode = AppErrorCode(2000);
     pub const NOT_AUTHORIZED: AppErrorCode = AppErrorCode(2001);
     /// (4000..5000) database
     pub const DATABASE_ERROR: AppErrorCode = AppErrorCode(4000);
-    /// (5000..) unknown server error
-    pub const SERVER_ERROR: AppErrorCode = AppErrorCode(5000);
+    /// (5000..6000) unknown server error
+    // pub const SERVER_ERROR: AppErrorCode = AppErrorCode(5000);
+    /// (6000..7000) actix web error
+    pub const ACTIX_ERROR: AppErrorCode = AppErrorCode(6000);
+    // pub const ACTIX_SERDE_ERROR: AppErrorCode = AppErrorCode(6001);
 }
 
 impl fmt::Display for AppError {
@@ -81,15 +84,15 @@ impl actix_web::error::ResponseError for AppError {
         HttpResponse::build(self.status_code()).json(self)
     }
 }
-//
-// impl From<actix_web::error::Error> for AppError {
-//     fn from(err: actix_web::error::Error) -> Self {
-//         AppError {
-//             code: AppError::SERVER_ERROR,
-//             message: err.to_string(),
-//         }
-//     }
-// }
+
+impl From<actix_web::error::Error> for AppError {
+    fn from(err: actix_web::error::Error) -> Self {
+        AppError {
+            code: AppError::ACTIX_ERROR,
+            message: err.to_string(),
+        }
+    }
+}
 
 impl From<sqlx::error::Error> for AppError {
     fn from(err: sqlx::error::Error) -> Self {
