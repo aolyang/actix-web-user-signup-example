@@ -21,7 +21,7 @@ pub struct NewUser {
     #[validate(length(min = 3))]
     pub username: String,
     #[validate(email)]
-    pub email: Option<String>,
+    pub email: String,
     pub nick_name: Option<String>,
     pub password: String,
 }

@@ -1,18 +1,60 @@
 use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
-use serde::Serialize;
+use serde::{Serialize, Serializer};
 use std::fmt;
 
-#[derive(Debug, Serialize)]
-pub enum AppError {
-    DBError(String),
-    ActixError(String),
-    NotFound(String),
+#[derive(Debug, Eq, PartialEq)]
+pub struct AppErrorCode(i32);
+
+impl Serialize for AppErrorCode {
+    fn serialize<S>(&self, serializer: S) -> Result<<S as Serializer>::Ok, <S as Serializer>::Error>
+    where
+        S: Serializer,
+    {
+        serializer.serialize_i32(self.0)
+    }
+}
+
+impl AppErrorCode {
+    pub fn message(self, message: String) -> AppError {
+        AppError {
+            message,
+            code: self,
+        }
+    }
+
+    pub fn default(self) -> AppError {
+        let message = match self {
+            AppError::INVALID_INPUT => "Invalid input.",
+            AppError::NOT_AUTHORIZED => "Not authorized.",
+            _ => "An unexpected error has occurred.",
+        };
+        AppError {
+            code: self,
+            message: message.to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Serialize)]
-pub struct ResInfo {
-    error_message: String,
+pub struct AppError {
+    pub code: AppErrorCode,
+    pub message: String,
+}
+
+impl AppError {
+    /// (1000..2000) error from request input  
+    pub const INVALID_INPUT: AppErrorCode = AppErrorCode(1000);
+    /// (1100..1200) users
+    pub const INVALID_USER_EMAIL: AppErrorCode = AppErrorCode(1101);
+    pub const INVALID_USER_NAME: AppErrorCode = AppErrorCode(1102);
+    /// (2000..3000) permissions
+    pub const PERMISSION_ERROR: AppErrorCode = AppErrorCode(2000);
+    pub const NOT_AUTHORIZED: AppErrorCode = AppErrorCode(2001);
+    /// (4000..5000) database
+    pub const DATABASE_ERROR: AppErrorCode = AppErrorCode(4000);
+    /// (5000..) unknown server error
+    pub const SERVER_ERROR: AppErrorCode = AppErrorCode(5000);
 }
 
 impl fmt::Display for AppError {
@@ -21,47 +63,39 @@ impl fmt::Display for AppError {
     }
 }
 
-impl AppError {
-    pub fn error_response(&self) -> String {
-        match self {
-            AppError::DBError(msg) => {
-                println!("Database error occurred {:?}", msg);
-                format!("Database Error {}", msg)
-            }
-            AppError::ActixError(msg) => {
-                println!("Server error occurred {:?}", msg);
-                "Internal server error".into()
-            }
-            AppError::NotFound(msg) => {
-                println!("Page not found");
-                msg.into()
-            }
-        }
+impl From<AppErrorCode> for AppError {
+    fn from(err: AppErrorCode) -> Self {
+        err.default()
     }
 }
 
 impl actix_web::error::ResponseError for AppError {
     fn status_code(&self) -> StatusCode {
-        match self {
-            AppError::DBError(..) | AppError::ActixError(..) => StatusCode::INTERNAL_SERVER_ERROR,
-            AppError::NotFound(..) => StatusCode::NOT_FOUND,
+        match self.code {
+            AppError::INVALID_INPUT => StatusCode::BAD_REQUEST,
+            AppError::NOT_AUTHORIZED => StatusCode::UNAUTHORIZED,
+            _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
     fn error_response(&self) -> HttpResponse {
-        HttpResponse::build(self.status_code()).json(ResInfo {
-            error_message: self.error_response(),
-        })
+        HttpResponse::build(self.status_code()).json(self)
     }
 }
 
 impl From<actix_web::error::Error> for AppError {
     fn from(err: actix_web::error::Error) -> Self {
-        AppError::ActixError(err.to_string())
+        AppError {
+            code: AppError::SERVER_ERROR,
+            message: err.to_string(),
+        }
     }
 }
 
 impl From<sqlx::error::Error> for AppError {
     fn from(err: sqlx::error::Error) -> Self {
-        AppError::DBError(err.to_string())
+        AppError {
+            code: AppError::DATABASE_ERROR,
+            message: err.to_string(),
+        }
     }
 }
