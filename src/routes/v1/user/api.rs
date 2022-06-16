@@ -3,7 +3,6 @@ use crate::models::user::NewUser;
 use crate::routes::v1::user::handler;
 use crate::GlobalState;
 use actix_web::{web, HttpResponse};
-use std::convert::TryInto;
 use validator::Validate;
 
 pub async fn sign_up(

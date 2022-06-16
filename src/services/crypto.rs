@@ -17,7 +17,7 @@ impl Crypto {
             key: Arc::new(env::var("SECRETE_KEY").unwrap()),
         }
     }
-    #[instrument(self, pwd)]
+    #[instrument(skip(self, pwd), err)]
     pub async fn hash_pwd(&self, pwd: String) -> Result<String> {
         Hasher::default()
             .with_secret_key(&*self.key)

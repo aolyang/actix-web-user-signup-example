@@ -16,8 +16,10 @@ use actix_web::{middleware::Logger, web, App, HttpServer};
 use dotenv::dotenv;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
+use tracing::{info, instrument};
 
 #[actix_rt::main]
+#[instrument]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
@@ -29,7 +31,7 @@ async fn main() -> std::io::Result<()> {
         config.postgres_user, config.postgres_password
     );
 
-    println!("Rust server start at: {}", server);
+    info!("Rust server start at: {}", server);
 
     let shared_state = web::Data::new(GlobalState {
         db: PgPoolOptions::new().connect(&db_url).await.unwrap(),

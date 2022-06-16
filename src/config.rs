@@ -1,5 +1,7 @@
 use config::{Config, ConfigError, Environment};
 use serde::Deserialize;
+use tracing::{info, instrument};
+use tracing_subscriber::EnvFilter;
 
 #[derive(Deserialize, Debug)]
 pub struct Server {
@@ -15,7 +17,13 @@ pub struct AppConfig {
 }
 
 impl AppConfig {
+    #[instrument]
     pub fn from_env() -> Result<Self, ConfigError> {
+        tracing_subscriber::fmt()
+            .with_env_filter(EnvFilter::from_default_env())
+            .init();
+        info!("loading configuration");
+
         let cfg = Config::builder()
             .add_source(Environment::default())
             .build()
